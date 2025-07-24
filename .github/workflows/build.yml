@@ -39,7 +39,7 @@ jobs:
       env:
         DB_HOST: localhost
         DB_PORT: 5432
-        DB_NAME: testdatabase}
+        DB_NAME: testdatabase
         DB_USER: testuser
         DB_PASSWORD: testpassword
         S3_BUCKET_NAME: audit-table-archives
