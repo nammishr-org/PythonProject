@@ -35,7 +35,7 @@ jobs:
       run: pip install boto3 psycopg2-binary
 
     - name: Run audit backup script
-      run: python AuditDBTables.py
+      run: python AuditMyBackup.py
       env:
         DB_HOST: localhost
         DB_PORT: 5432
