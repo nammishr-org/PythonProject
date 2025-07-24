@@ -1,0 +1,46 @@
+name: Backup Audit Tables to S3
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::977016738307:role/GithubActionsS3Role
+        aws-region: us-east-1
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12.7'
+
+    - name: Install dependencies
+      run: pip install boto3 psycopg2-binary
+
+    - name: Run audit backup script
+      run: python AuditDBTables.py
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: testdatabase}
+        DB_USER: testuser
+        DB_PASSWORD: testpassword
+        S3_BUCKET_NAME: audit-table-archives
+        S3_PREFIX: audit_zipped_files
