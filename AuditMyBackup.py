@@ -92,15 +92,15 @@ def backup_tables(conn, tables):
 
 def upload_zip_files_to_s3(local_file_path, bucket_name, s3_prefix):
     s3 = boto3.client('s3')
-    # s3_key = f"{s3_prefix}{local_file_path}"
-    # print(f"Uploading {local_file_path} to s3://{bucket_name}/{s3_key}")
-    # try:
-    #     s3.upload_file(local_file_path, bucket_name, s3_key)
-    #     print(f"✅ Uploaded to s3://{S3_BUCKET}/{s3_prefix}")
-    #     return True
-    # except Exception as e:
-    #     print(f"Error uploading {local_file_path} to S3: {e}")
-    #     return False
+    s3_key = f"{s3_prefix}{local_file_path}"
+    print(f"Uploading {local_file_path} to s3://{bucket_name}/{s3_key}")
+    try:
+        s3.upload_file(local_file_path, bucket_name, s3_key)
+        print(f"✅ Uploaded to s3://{S3_BUCKET}/{s3_prefix}")
+        return True
+    except Exception as e:
+        print(f"Error uploading {local_file_path} to S3: {e}")
+        return False
 
 
 # MAIN
