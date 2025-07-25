@@ -62,17 +62,17 @@ jobs:
     - name: Create dummy audit table and data
       run: |
               PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
-              CREATE table gha_request_timestamps(
+              "CREATE table gha_request_timestamps(
               id SERIAL PRIMARY KEY,
               repo_name VARCHAR(255),
               request_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
               processed BOOLEAN DEFAULT false
-              );
+              );"
               
               PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
-              INSERT INTO public.gha_request_timestamps
+              "INSERT INTO public.gha_request_timestamps
               (id, repo_name, "timestamp", processed)
-              VALUES(37, 'TT-1-service', '2025-05-15 11:36:59.021', false);
+              VALUES(37, 'TT-1-service', '2025-05-15 11:36:59.021', false);"
     
 
     - name: Run audit backup script
