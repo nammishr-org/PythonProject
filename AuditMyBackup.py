@@ -14,19 +14,32 @@ from datetime import datetime, timezone
 import sys
 
 # CONFIGURATION
+# DB_CONFIG = {
+#     'host': 'localhost',
+#     'port': '5432',
+#     'dbname': 'testdatabase',
+#     'user': 'testuser',
+#     'password': 'testpassword'
+# }
+
+
 DB_CONFIG = {
-    'host': 'localhost',
-    'port': '5432',
-    'dbname': 'testdatabase',
-    'user': 'testuser',
-    'password': 'testpassword'
+    'host': os.getenv("DB_HOST", "localhost"),
+    'port': os.getenv("DB_PORT", 5432),
+    'database': os.getenv("DB_NAME", "testdatabase"),
+    'user': os.getenv("DB_USER", "testuser"),
+    'password': os.getenv("DB_PASSWORD", "testpassword")
 }
 
-S3_BUCKET = 'audit-table-archives'
-# S3_BUCKET = os.getenv('S3_BUCKET_NAME')
-S3_REGION = 'us-east-1'  # e.g., 'us-east-1'
-# S3_PREFIX = os.getenv('S3_PREFIX')
-S3_PREFIX = "audit_zipped_files"
+# S3_BUCKET = 'audit-table-archives'
+# S3_REGION = 'us-east-1'  # e.g., 'us-east-1'
+# S3_PREFIX = "audit_zipped_files"
+
+S3_BUCKET = os.getenv('S3_BUCKET_NAME')
+S3_PREFIX = os.getenv('S3_PREFIX')
+S3_REGION = os.getenv('S3_REGION')
+
+
 
 
 # STEP 1: Connect to PostgreSQL

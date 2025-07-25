@@ -16,6 +16,26 @@ jobs:
   backup:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: testdatabase
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: testdatabase
+      DB_USER: testuser
+      DB_PASSWORD: testpassword
+      S3_BUCKET_NAME: audit-table-archives
+      S3_PREFIX: audit_zipped_files
+      S3_REGION: us-east-1
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -34,13 +54,26 @@ jobs:
     - name: Install dependencies
       run: pip install boto3 psycopg2-binary
 
+    - name: Wait for Postgres to be ready
+      run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          sleep 15  # Let DB start before running script
+
+    - name: Create dummy audit table and data
+      run: |
+              PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
+              "CREATE TABLE cars_sale_audit__audit (operation character varying(32) NOT NULL, correlation_id text, raw_data jsonb, created_on timestamp without time zone NOT NULL, created_by text NOT NULL, 
+               id integer NOT NULL);"
+              
+              PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
+              "INSERT INTO cars_sale_audit__audit(operation, correlation_id, raw_data, created_on, created_by, id) VALUES('AFTER_INSERT', '828292-010101-29222-9191919', '{"id": 544, "env": "qa", "comments": null, "txn_owner": null, "created_by": "00000000-734c-4b29-bef1-73810aed833a", "created_on": "2025-02-28T08:54:21.586647", "error_info": null, "event_type": "test-upload", "message_id": "5644120e-b560-4455-b043-dd92cf47ab05", "txn_status": "AM_EVENT", "updated_by": "00000000-734c-4b29-bef1-73810aed833a", "updated_on": "2025-02-28T08:54:21.586647", "merge_status": null, "source_system": "CAR_API", "correlation_id": "828292-010101-29222-9191919", "incoming_payload": {"payload": "{\"destCustOrgId\":\"109317\",\"sourceOrgIds\":[\"109316\",\"109317\"],\"eventId\":\"5644120e-b560-4455-b043-dd92cf47ab05\",\"eventTimestamp\":\"Feb 28, 2025, 8:54:21 KK\",\"eventType\":\"O_CAR\",\"destResourceId\":\"ca85ca3f-c3f0-44c1-b378-dfsss\",\"sourceResourceIds\":[\"rsdsd-22bd-4a2e-dsds-7ae01f40759c\",\"4545-c3f0-44c1-b378-uyyuy\"],\"source\":\"PL_API\"}"}, "ors_status": null, "aa_message_payload": null, "ad_response_payload": null}'::jsonb, '2025-02-28 08:54:21.586', 'ok', 5043);"
+    
+
     - name: Run audit backup script
       run: python AuditMyBackup.py
-      env:
-        DB_HOST: localhost
-        DB_PORT: 5432
-        DB_NAME: testdatabase
-        DB_USER: testuser
-        DB_PASSWORD: testpassword
-        S3_BUCKET_NAME: audit-table-archives
-        S3_PREFIX: audit_zipped_files
+
+
+    - name: Verify backup file was uploaded to S3
+      run: |
+              echo "Listing contents of S3 bucket $S3_BUCKET..."
+              aws s3 ls s3://S3_BUCKET_NAME/ --region $AWS_REGION
