@@ -15,25 +15,22 @@ import sys
 
 # CONFIGURATION
 DB_CONFIG = {
-    'host': os.getenv('DB_HOST'),
-    'port': os.getenv('DB_PORT'),
-    'dbname': os.getenv('DB_NAME'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD')
+    'host': 'localhost',
+    'port': '5432',
+    'dbname': 'testdatabase',
+    'user': 'testuser',
+    'password': 'testpassword'
 }
 
-# S3_BUCKET = 'audit-table-archives'
-S3_BUCKET = os.getenv('S3_BUCKET_NAME')
+S3_BUCKET = 'audit-table-archives'
+# S3_BUCKET = os.getenv('S3_BUCKET_NAME')
 S3_REGION = 'us-east-1'  # e.g., 'us-east-1'
-S3_PREFIX = os.getenv('S3_PREFIX')
-
-
-# S3_PREFIX = "audit_zipped_files"
+# S3_PREFIX = os.getenv('S3_PREFIX')
+S3_PREFIX = "audit_zipped_files"
 
 
 # STEP 1: Connect to PostgreSQL
 def connect_postgres():
-    print(DB_CONFIG)
     conn = psycopg2.connect(**DB_CONFIG)
     return conn
 
@@ -120,19 +117,7 @@ def main():
         print("🗜️ Zipping files and taking backup now...")
         zip_path = backup_tables(conn, audit_tables)
         print("🗜️ Uploading zipped files to S3 now..")
-        # upload_zip_files_to_s3(zip_path)
-        # timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-        # zip_file = f"audit_backup_{timestamp}.zip"
-        bucket_name = S3_BUCKET
-        # s3_key = f'audit-backups/{zip_file}'
-        # ----- upload_zip_files_to_s3(zip_path, bucket_name, S3_PREFIX)
-
-        # local_path = sys.argv[1] if len(sys.argv) > 1 else "./zipped_files"
-        # bucket = os.environ.get("S3_BUCKET_NAME", "audit-table-archives")
-        # s3_folder = os.environ.get("S3_FOLDER", "audit_zipped_files")  # e.g., "zipped_backups"
-
-        # upload_zip_files_to_s3(local_path, bucket, s3_folder)
-
+        upload_zip_files_to_s3(zip_path, S3_BUCKET, S3_PREFIX)
     finally:
         conn.close()
 
