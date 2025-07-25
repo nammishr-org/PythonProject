@@ -33,6 +33,7 @@ S3_PREFIX = os.getenv('S3_PREFIX')
 
 # STEP 1: Connect to PostgreSQL
 def connect_postgres():
+    print(DB_CONFIG)
     conn = psycopg2.connect(**DB_CONFIG)
     return conn
 
