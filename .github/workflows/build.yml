@@ -57,19 +57,19 @@ jobs:
     - name: Wait for Postgres to be ready
       run: |
           echo "Waiting for PostgreSQL to be ready..."
-          sleep 15  # Let DB start before running script
+          sleep 15  
 
     - name: Create dummy audit table and data
       run: |
               PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
-              "CREATE table gha_request_timestamps(
+              "CREATE table gha_request_timestamps_audit(
               id SERIAL PRIMARY KEY,
               repo_name VARCHAR(255),
               processed BOOLEAN DEFAULT false
               );"
               
               PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
-              "INSERT INTO public.gha_request_timestamps
+              "INSERT INTO public.gha_request_timestamps_audit
               (id, repo_name, processed)
               VALUES(37, 'TT-1-service', false);"
     
@@ -80,5 +80,5 @@ jobs:
 
     - name: Verify backup file was uploaded to S3
       run: |
-              echo "Listing contents of S3 bucket $S3_BUCKET..."
+              echo "Listing contents of S3 bucket S3_BUCKET_NAME..."
               aws s3 ls s3://S3_BUCKET_NAME/ --region $AWS_REGION
