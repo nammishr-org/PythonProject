@@ -81,4 +81,4 @@ jobs:
     - name: Verify backup file was uploaded to S3
       run: |
               echo "Listing contents of S3 bucket S3_BUCKET_NAME..."
-              aws s3 ls s3://S3_BUCKET_NAME/ --region $AWS_REGION
+              aws s3 ls s3://$S3_BUCKET_NAME/ --region $AWS_REGION
