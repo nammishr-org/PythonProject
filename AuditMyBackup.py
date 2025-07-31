@@ -59,7 +59,6 @@ def get_audit_tables(conn):
     """
     with conn.cursor() as cur:
         cur.execute(query)
-        print("List of Audit Tables" , cur.fetchall())
         return cur.fetchall()
 
 
@@ -101,11 +100,12 @@ def upload_zip_files_to_s3(local_file_path, bucket_name):
 def main():
     now = datetime.now(timezone.utc)
     timestamp = now.strftime("%Y%m%d_%H%M%S")
-    print(f"🕒 Backup started at UTC: {now}")
+    # print(f"🕒 Backup started at UTC: {now}")
 
     conn = connect_postgres()
     try:
         audit_tables = get_audit_tables(conn)
+        print(f"Audit tables detected {audit_tables}")
         if not audit_tables:
             print("⚠️ No audit tables found.")
             return
