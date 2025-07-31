@@ -11,17 +11,6 @@ import boto3
 import tempfile
 import zipfile
 from datetime import datetime, timezone
-import sys
-
-# CONFIGURATION
-# DB_CONFIG = {
-#     'host': 'localhost',
-#     'port': '5432',
-#     'dbname': 'testdatabase',
-#     'user': 'testuser',
-#     'password': 'testpassword'
-# }
-
 
 DB_CONFIG = {
     'host': os.getenv("DB_HOST", "localhost"),
@@ -33,7 +22,6 @@ DB_CONFIG = {
 
 
 S3_BUCKET = os.getenv('S3_BUCKET_NAME')
-# S3_PREFIX = os.getenv('S3_PREFIX')
 S3_REGION = os.getenv('S3_REGION')
 
 
@@ -84,7 +72,6 @@ def backup_tables(conn, tables):
 
 def upload_zip_files_to_s3(local_file_path, bucket_name):
     s3 = boto3.client('s3')
-    # s3_key = f"{s3_prefix}{local_file_path}"
     s3_key = f"{local_file_path}"
     print(f"Uploading {local_file_path} to s3://{bucket_name}/{s3_key}")
     try:
@@ -100,7 +87,6 @@ def upload_zip_files_to_s3(local_file_path, bucket_name):
 def main():
     now = datetime.now(timezone.utc)
     timestamp = now.strftime("%Y%m%d_%H%M%S")
-    # print(f"🕒 Backup started at UTC: {now}")
 
     conn = connect_postgres()
     try:
@@ -120,5 +106,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # connect_postgres()
-    # printme()
