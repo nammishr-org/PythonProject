@@ -78,8 +78,8 @@ jobs:
               PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
               "CREATE table test_request_timestamp_audit(
               id SERIAL PRIMARY KEY,
-              repo_name VARCHAR(255),
-              processed BOOLEAN DEFAULT false
+              repo_alias VARCHAR(255),
+              status BOOLEAN DEFAULT false
               );"
               
               PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
