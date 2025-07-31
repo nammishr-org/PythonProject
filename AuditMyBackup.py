@@ -31,12 +31,9 @@ DB_CONFIG = {
     'password': os.getenv("DB_PASSWORD", "testpassword")
 }
 
-# S3_BUCKET = 'audit-table-archives'
-# S3_REGION = 'us-east-1'  # e.g., 'us-east-1'
-# S3_PREFIX = "audit_zipped_files"
 
 S3_BUCKET = os.getenv('S3_BUCKET_NAME')
-S3_PREFIX = os.getenv('S3_PREFIX')
+# S3_PREFIX = os.getenv('S3_PREFIX')
 S3_REGION = os.getenv('S3_REGION')
 
 
@@ -62,11 +59,11 @@ def get_audit_tables(conn):
     """
     with conn.cursor() as cur:
         cur.execute(query)
+        print("List of Audit Tables" , cur.fetchall())
         return cur.fetchall()
 
+
     # STEP 3: Export tables to CSV and zip them
-
-
 def backup_tables(conn, tables):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     zip_filename = f"audit_backup_{timestamp}.zip"
@@ -86,28 +83,14 @@ def backup_tables(conn, tables):
     return zip_path
 
 
-# def upload_zip_files_to_s3(local_dir, bucket_name, s3_prefix="audit_zipped_files"):
-# def upload_zip_files_to_s3(local_dir, bucket_name, s3_prefix):
-#     s3 = boto3.client('s3')
-#     if not os.path.exists(local_dir):
-#         raise ValueError(f"Directory does not exist: {local_dir}")
-#     for file_name in os.listdir(local_dir):
-#         if file_name.endswith(".zip"):
-#             local_file_path = os.path.join(local_dir, file_name)
-#             s3_key = f"{s3_prefix}/{file_name}" if s3_prefix else file_name
-#
-#             print(f"Uploading {local_file_path} to s3://{bucket_name}/{s3_key}")
-#             s3.upload_file(local_file_path, bucket_name, s3_key)
-#             print(f"✅ Uploaded to s3://{S3_BUCKET}/{s3_prefix}")
-#             os.remove(local_dir)
-
-def upload_zip_files_to_s3(local_file_path, bucket_name, s3_prefix):
+def upload_zip_files_to_s3(local_file_path, bucket_name):
     s3 = boto3.client('s3')
-    s3_key = f"{s3_prefix}{local_file_path}"
+    # s3_key = f"{s3_prefix}{local_file_path}"
+    s3_key = f"{local_file_path}"
     print(f"Uploading {local_file_path} to s3://{bucket_name}/{s3_key}")
     try:
         s3.upload_file(local_file_path, bucket_name, s3_key)
-        print(f"✅ Uploaded to s3://{S3_BUCKET}/{s3_prefix}")
+        print(f"✅ Uploaded to s3://{S3_BUCKET}")
         return True
     except Exception as e:
         print(f"Error uploading {local_file_path} to S3: {e}")
@@ -130,7 +113,7 @@ def main():
         print("🗜️ Zipping files and taking backup now...")
         zip_path = backup_tables(conn, audit_tables)
         print("🗜️ Uploading zipped files to S3 now..")
-        upload_zip_files_to_s3(zip_path, S3_BUCKET, S3_PREFIX)
+        upload_zip_files_to_s3(zip_path, S3_BUCKET)
     finally:
         conn.close()
 
