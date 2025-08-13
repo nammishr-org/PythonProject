@@ -23,6 +23,7 @@ DB_CONFIG = {
 
 S3_BUCKET = os.getenv('S3_BUCKET_NAME')
 S3_REGION = os.getenv('S3_REGION')
+ENV = os.getenv('env')
 
 
 
@@ -72,7 +73,7 @@ def backup_tables(conn, tables):
 
 def upload_zip_files_to_s3(local_file_path, bucket_name):
     s3 = boto3.client('s3')
-    s3_key = f"{local_file_path}"
+    s3_key = f"{ENV}/{local_file_path}"
     print(f"Uploading {local_file_path} to s3://{bucket_name}/{s3_key}")
     try:
         s3.upload_file(local_file_path, bucket_name, s3_key)

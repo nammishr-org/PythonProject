@@ -35,6 +35,7 @@ jobs:
       S3_BUCKET_NAME: audit-table-archives
 #      S3_PREFIX: audit_zipped_files
       S3_REGION: us-east-1
+      env: QA
 
     steps:
     - name: Checkout code
@@ -71,7 +72,7 @@ jobs:
               PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
               "INSERT INTO public.gha_request_timestamps_audit
               (id, repo_name, processed)
-              VALUES(37, 'TT-1-service', false);"
+              VALUES(37, 'TTz-1-service', false);"
 
     - name: Create dummy audit table2 and data
       run: |
@@ -85,7 +86,7 @@ jobs:
               PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
               "INSERT INTO public.test_request_timestamp_audit
               (id, repo_alias, status)
-              VALUES(45, 'UU-5-polish', true);"    
+              VALUES(453, 'UUx-5-polish', true);"    
     
 
     - name: Run audit backup script
