@@ -72,7 +72,7 @@ jobs:
               PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
               "INSERT INTO public.gha_request_timestamps_audit
               (id, repo_name, processed)
-              VALUES(37, 'TTz-1-service', false);"
+              VALUES(37, 'TTs-1-service', false);"
 
     - name: Create dummy audit table2 and data
       run: |
@@ -86,7 +86,7 @@ jobs:
               PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
               "INSERT INTO public.test_request_timestamp_audit
               (id, repo_alias, status)
-              VALUES(453, 'UUx-5-polish', true);"    
+              VALUES(454, 'UUy-5-polish', true);"    
     
 
     - name: Run audit backup script
